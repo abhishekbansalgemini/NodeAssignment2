@@ -60,6 +60,24 @@ p {
 	left: 30px;
 }
 
+.no-user{
+	height: 90vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.message{
+	color: red;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 20%;
+	height: 20%;
+	font-size: 30px;
+	border: 1px solid red;
+	/* padding: 10px; */
+}
 .card-container .round {
 	border: 1px solid #03BFCB;
 	border-radius: 50%;
@@ -128,8 +146,9 @@ h2{
 }
 .buttons {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   margin-top: 10px;
+  gap:10px
 }
 
 .update-button,
@@ -144,6 +163,7 @@ h2{
 .update-button {
   background-color: #2196f3;
   color: #fff;
+  text-decoration: none;
 }
 
 .delete-button {

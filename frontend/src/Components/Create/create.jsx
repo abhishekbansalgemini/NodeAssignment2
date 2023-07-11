@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Create.css";
 import { Navigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CreateNavbar from "../Navbar/CreateNavbar";
 
 const CreateComponent = () => {
   const { id } = useParams();
@@ -27,7 +30,6 @@ const CreateComponent = () => {
       setEmail(data.email);
       setNumber(data.number);
       setCategory(data.category);
-      // setTech(data.tech);
     });
   }, [id]);
 
@@ -48,10 +50,6 @@ const CreateComponent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name || !gender || !email || !number || !category || !profileImage) {
-      return;
-    }
-
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -67,15 +65,15 @@ const CreateComponent = () => {
 
       if (id) {
         await axios.put("http://localhost:4000/record/" + id, formData);
-        alert("User updated successfully");
+        toast("User updated successfully");
       } else {
         await axios.post("http://localhost:4000/record/newuser", formData);
-        alert("User created successfully");
+        toast("User created successfully");
       }
       setRedirect(true);
     } catch (error) {
       console.log(error);
-      alert("Failed to create user");
+      toast("Failed to create user");
     }
   };
   if (redirect) {
@@ -83,8 +81,55 @@ const CreateComponent = () => {
   }
   const handlePreview = (e) => {
     e.preventDefault();
-    if (!name || !gender || !email || !number || !category) {
-      alert("Please fill the details first");
+
+    //Name validation
+    if (name.trim() === "") {
+      toast("Name is required");
+      return;
+    } else {
+      setName(name.trim());
+      const nameRegex = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+      if (!nameRegex.test(name)) {
+        toast("Please enter a valid name having alphabets only");
+        return;
+      }
+    }
+
+    //gender validation
+    if (!gender) {
+      toast("Please select your gender");
+      return;
+    }
+
+    //email validation
+    if (email.trim() === "") {
+      toast("Email is required");
+      return;
+    } else {
+      setEmail(email.trim())
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        toast("Please enter a valid mail id");
+        return;
+      }
+    }
+
+    //number validatio
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(number)) {
+      toast("Please enter a valid phone number");
+      return;
+    }
+
+    //category validation
+    if (!category) {
+      toast("Please select the category");
+      return;
+    }
+
+    // tech validation
+    if (tech.length === 0) {
+      toast("Please choose from the technologies");
       return;
     }
 
@@ -97,6 +142,7 @@ const CreateComponent = () => {
 
   return (
     <>
+    <CreateNavbar></CreateNavbar>
       <div className="row">
         <div className="col-md-12">
           <form>
@@ -145,7 +191,9 @@ const CreateComponent = () => {
             <br />
 
             <strong>
-              <label htmlFor="email">Email:</label>
+              <label htmlFor="email" className="fem">
+                Email:
+              </label>
             </strong>
             <input
               type="email"
@@ -157,7 +205,7 @@ const CreateComponent = () => {
             />
 
             <strong>
-              <label htmlFor="number">Number:</label>
+              <label htmlFor="number">Phone:</label>
             </strong>
             <input
               type="number"
@@ -252,7 +300,9 @@ const CreateComponent = () => {
             <br />
 
             <strong>
-              <label htmlFor="profile">Profile Picture:</label>
+              <label htmlFor="profile" className="fem">
+                Profile Picture:
+              </label>
             </strong>
             <input
               type="file"
@@ -272,7 +322,7 @@ const CreateComponent = () => {
               <small className="text-danger">{message}</small>
             </p>
 
-            <button className="check" type="submit" onClick={handlePreview}>
+            <button className="check fem" type="submit" onClick={handlePreview}>
               Preview
             </button>
           </form>
@@ -281,7 +331,7 @@ const CreateComponent = () => {
       {showModal && (
         <div className="modal">
           <div className="modal-content">
-            <h2 className="modal-title">Preview</h2>
+            <h2 className="modal-title">User Details</h2>
             <div className="modal-details">
               <p>
                 <strong>Name:</strong> {name}
@@ -304,15 +354,16 @@ const CreateComponent = () => {
                   <span>{t} </span>
                 ))}
               </p>
-              <p>
-                <strong>Profile Picture:</strong> <br />{" "}
-                <img
-                  src={profileImage ? URL.createObjectURL(profileImage) : ""}
-                  alt="Profile"
-                  className="profile-image"
-                />
-              </p>
-              {/* Display other fields */}
+              {profileImage && (
+                <p>
+                  <strong>Profile Picture:</strong> <br />{" "}
+                  <img
+                    src={profileImage ? URL.createObjectURL(profileImage) : ""}
+                    alt="Profile"
+                    className="profile-image"
+                  />
+                </p>
+              )}
             </div>
             <div className="modal-buttons">
               <button
@@ -327,11 +378,11 @@ const CreateComponent = () => {
               >
                 Confirm
               </button>
-              {/* Add other buttons if needed */}
             </div>
           </div>
         </div>
       )}
+      <ToastContainer />
     </>
   );
 };
