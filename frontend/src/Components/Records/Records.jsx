@@ -22,6 +22,12 @@ function Records() {
   }, []);
 
   const handleDelete = async (userId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this user?");
+  
+    if (!confirmed) {
+      return;
+    }
+  
     try {
       await axios.delete(`http://localhost:4000/record/users/${userId}`);
       setUsers(users.filter((user) => user._id !== userId));
